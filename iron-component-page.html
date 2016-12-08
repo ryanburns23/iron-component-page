@@ -641,7 +641,7 @@ documentation page including demos (if available).
           }
           this.async(function() { this.$.active.value = active; });
           if (analyzer && analyzer.elementsByTagName) {
-            this.$.headerPanel.scroller.scrollTop = 0;
+            this.$.headerPanel.scrollTarget.scrollTop = 0;
             this._activeDescriptor = this._findDescriptor(active);
             if (this._activeDescriptor) {
               var hasDemo;
