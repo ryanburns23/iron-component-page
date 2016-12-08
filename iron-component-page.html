@@ -15,10 +15,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="../app-header/app-header.html">
+<link rel="import" href="../app-layout/app-header/app-header.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
-<link rel="import" href="../app-toolbar/app-toolbar.html">
+<link rel="import" href="../app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../app-layout/app-header-layout/app-header-layout.html">
 
 <!--
 Loads Polymer element and behavior documentation using
@@ -31,12 +32,11 @@ documentation page including demos (if available).
     <style>
       :host {
         font-family: 'Roboto', 'Noto', sans-serif;
-        @apply(--layout-fit);
         @apply(--layout);
         @apply(--layout-vertical);
-        overflow: hidden;
         background: black;
         color: white;
+        margin: 0;
       }
 
       [hidden] {
@@ -205,32 +205,40 @@ documentation page including demos (if available).
     <hydrolysis-analyzer id="analyzer" src="[[_srcUrl]]" transitive="[[transitive]]" clean analyzer="{{_hydroDesc}}" loading="{{_hydroLoading}}"></hydrolysis-analyzer>
     <iron-ajax id="ajax" url="[[docSrc]]" handle-as="json" on-response="_handleAjaxResponse" on-error="_handleError"></iron-ajax>
 
-    <app-header id="headerPanel" mode="[[scrollMode]]">
-      <app-toolbar catalog-hidden>
-        <div class="docs-header">
-          <!-- TODO: Replace with paper-dropdown-menu when available -->
-          <select id="active" value="[[active]]" on-change="_handleMenuItemSelected">
-            <template is="dom-repeat" items="[[docElements]]">
-              <option value="[[item.is]]">[[item.is]]</option>
-            </template>
-            <template is="dom-repeat" items="[[docBehaviors]]">
-              <option value="[[item.is]]">[[item.is]]</option>
-            </template>
-          </select>
-        </div>
-        <iron-selector attr-for-selected="view" selected="{{view}}" id="links" hidden$="[[!docDemos.length]]">
-          <a view="docs"><iron-icon icon="description"></iron-icon> Docs</a>
-          <a view="[[_demoView(docDemos.0.path)]]"><iron-icon icon="visibility"></iron-icon> <span>Demo</span></a>
-        </iron-selector>
-      </app-toolbar>
+
+    <app-header-layout fullbleed>
+      <app-header id="headerPanel" fixed effects="waterfall" mode="[[scrollMode]]">
+        <app-toolbar catalog-hidden>
+          <div class="docs-header">
+            <!-- TODO: Replace with paper-dropdown-menu when available -->
+            <select id="active" value="[[active]]" on-change="_handleMenuItemSelected">
+              <template is="dom-repeat" items="[[docElements]]">
+                <option value="[[item.is]]">[[item.is]]</option>
+              </template>
+              <template is="dom-repeat" items="[[docBehaviors]]">
+                <option value="[[item.is]]">[[item.is]]</option>
+              </template>
+            </select>
+          </div>
+          <iron-selector attr-for-selected="view" selected="{{view}}" id="links" hidden$="[[!docDemos.length]]">
+            <a view="docs"><iron-icon icon="description"></iron-icon> Docs</a>
+            <a view="[[_demoView(docDemos.0.path)]]"><iron-icon icon="visibility"></iron-icon> <span>Demo</span></a>
+          </iron-selector>
+        </app-toolbar>
+      </app-header>
+
       <div id="content">
         <iron-selector id="view" selected="[[_viewType(view)]]" attr-for-selected="id">
           <div id="docs">
             <div id="catalog-heading" catalog-only>
               <h2><span>[[active]]</span> <span class="version" hidden$="[[!version]]">[[version]]</span></h2>
             </div>
-            <iron-doc-viewer prefix="[[_fragmentPrefix]]" id="viewer" descriptor="{{_activeDescriptor}}"
-              on-iron-doc-viewer-component-selected="_handleComponentSelectedEvent"></iron-doc-viewer>
+            <iron-doc-viewer
+              prefix="[[_fragmentPrefix]]"
+              id="viewer"
+              descriptor="{{_activeDescriptor}}"
+              on-iron-doc-viewer-component-selected="_handleComponentSelectedEvent">
+            </iron-doc-viewer>
             <div id="nodocs" hidden$="[[_activeDescriptor]]" class="no-docs">
               No documentation found.
             </div>
@@ -238,7 +246,9 @@ documentation page including demos (if available).
           <div id="demo"></div>
         </iron-selector>
       </div>
-    </app-header>
+
+    </app-header-layout>
+
   </template>
 
   <script>
