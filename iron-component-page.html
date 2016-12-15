@@ -15,15 +15,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="../app-layout/app-header/app-header.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
-<link rel="import" href="../app-layout/app-toolbar/app-toolbar.html">
 
 <!--
 Loads Polymer element and behavior documentation using
 [Hydrolysis](https://github.com/PolymerLabs/hydrolysis) and renders a complete
-documentation page including demos (if available).
+documentation page
 -->
 
 <dom-module id="iron-component-page">
@@ -31,12 +29,11 @@ documentation page including demos (if available).
     <style>
       :host {
         font-family: 'Roboto', 'Noto', sans-serif;
-        @apply(--layout);
-        @apply(--layout-fit);
-        @apply(--layout-vertical);
         background: black;
         color: white;
         margin: 0;
+        display: block;
+        position: relative;
       }
 
       [hidden] {
@@ -48,7 +45,7 @@ documentation page including demos (if available).
       }
 
       app-header {
-        position: fixed;
+        position: absolute;;
         top: 0;
         left: 0;
         width: 100%;
@@ -75,35 +72,8 @@ documentation page including demos (if available).
       #content {
         display: block;
         background: #303030;
-        margin-top: 64px;
         @apply(--layout-flex);
-      }
-
-      app-toolbar a {
-        margin: 0 10px;
-        cursor: pointer;
-      }
-
-
-      app-toolbar a:last-child {
-        margin-right: 0;
-      }
-
-      app-toolbar a, app-toolbar a iron-icon {
-        font-weight: normal;
-        color: var(--paper-grey-500);
-      }
-
-      app-toolbar iron-icon {
-        margin: -2px 5px 0 0;
-      }
-
-      app-toolbar a.iron-selected, app-toolbar a.iron-selected iron-icon {
-        color: green !important;
-      }
-
-      app-toolbar a:hover, app-toolbar a:hover iron-icon {
-        color: white;
+        @apply(--layout-vertical);
       }
 
       select {
@@ -111,29 +81,11 @@ documentation page including demos (if available).
         color: white;
       }
 
-      #demo{
-        height: 99%;
-      }
-
-      #demo iframe {
-        height: 100%;
-        @apply(--layout-flex);
-      }
-
       #nodocs {
-        background: var(--paper-grey-50);
+        background: #303030;
         font-size: 24px;
         font-weight: 400;
         color: var(--paper-grey-400);
-      }
-
-      #demo iframe {
-        border: 0;
-        background: transparent;
-        width: 100%;
-        height: 100%;
-        overflow-x: none;
-        overflow-y: auto;
       }
 
       #view > * {
@@ -212,50 +164,42 @@ documentation page including demos (if available).
 
       .docs-header {
         @apply(--layout-flex);
+        margin-bottom: 10px;
       }
     </style>
 
     <hydrolysis-analyzer id="analyzer" src="[[_srcUrl]]" transitive="[[transitive]]" clean analyzer="{{_hydroDesc}}" loading="{{_hydroLoading}}"></hydrolysis-analyzer>
     <iron-ajax id="ajax" url="[[docSrc]]" handle-as="json" on-response="_handleAjaxResponse" on-error="_handleError"></iron-ajax>
 
-    <app-header id="headerPanel" fixed mode="[[scrollMode]]">
-      <app-toolbar catalog-hidden>
-        <div class="docs-header">
-          <!-- TODO: Replace with paper-dropdown-menu when available -->
-          <select id="active" value="[[active]]" on-change="_handleMenuItemSelected">
-            <template is="dom-repeat" items="[[docElements]]">
-              <option value="[[item.is]]">[[item.is]]</option>
-            </template>
-            <template is="dom-repeat" items="[[docBehaviors]]">
-              <option value="[[item.is]]">[[item.is]]</option>
-            </template>
-          </select>
-        </div>
-        <iron-selector attr-for-selected="view" selected="{{view}}" id="links" hidden$="[[!docDemos.length]]">
-          <a view="docs"><iron-icon icon="description"></iron-icon> Docs</a>
-          <a view="[[_demoView(docDemos.0.path)]]"><iron-icon icon="visibility"></iron-icon> <span>Demo</span></a>
-        </iron-selector>
-      </app-toolbar>
-    </app-header>
-
     <div id="content">
-      <iron-selector id="view" selected="[[_viewType(view)]]" attr-for-selected="id">
+
         <div id="docs">
-          <div id="catalog-heading" catalog-only>
-            <h2><span>[[active]]</span> <span class="version" hidden$="[[!version]]">[[version]]</span></h2>
+
+          <div class="docs-header">
+            <!-- TODO: Replace with paper-dropdown-menu when available -->
+            <select id="active" value="[[active]]" on-change="_handleMenuItemSelected">
+              <template is="dom-repeat" items="[[docElements]]">
+                <option value="[[item.is]]">[[item.is]]</option>
+              </template>
+              <template is="dom-repeat" items="[[docBehaviors]]">
+                <option value="[[item.is]]">[[item.is]]</option>
+              </template>
+            </select>
           </div>
+
           <iron-doc-viewer
-            prefix="[[_fragmentPrefix]]"
             id="viewer"
+            prefix="[[_fragmentPrefix]]"
             descriptor="{{_activeDescriptor}}"
             on-iron-doc-viewer-component-selected="_handleComponentSelectedEvent">
           </iron-doc-viewer>
+
           <div id="nodocs" hidden$="[[_activeDescriptor]]" class="no-docs">
             No documentation found.
           </div>
+
         </div>
-        <div id="demo"></div>
-      </iron-selector>
+
     </div>
 
   </template>
@@ -391,6 +335,7 @@ documentation page including demos (if available).
             notify: true,
             readOnly: true
           },
+
 
           /**
            * The scroll mode for the page. For details about the modes,
@@ -574,9 +519,11 @@ documentation page including demos (if available).
         _updateFrameSrc: function(view) {
           if (!view || view.indexOf("demo:") !== 0) return "about:blank";
 
-          var src = view.split(':')[1];
-          var demoSrc = new URL(src, this.base).toString();
+          //var src = view.split(':')[1];
+          //var demoSrc = new URL(src, this.base).toString();
           var self = this;
+          var demoSrc = this.demo;
+          console.log(demoSrc);
 
           // If you use history.pushState with iframe.src = url, you will create 2 history entries,
           // but creating a new iframe dynamically will prevent it.
@@ -660,7 +607,6 @@ documentation page including demos (if available).
           }
           this.async(function() { this.$.active.value = active; });
           if (analyzer && analyzer.elementsByTagName) {
-            this.$.headerPanel.scrollTarget.scrollTop = 0;
             this._activeDescriptor = this._findDescriptor(active);
             if (this._activeDescriptor) {
               var hasDemo;
@@ -769,9 +715,7 @@ documentation page including demos (if available).
           return "demo:" + path;
         },
 
-        _viewType: function(view) {
-          return view ? view.split(":")[0] : null;
-        }
+
       });
     })();
   </script>
