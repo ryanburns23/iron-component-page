@@ -32,6 +32,9 @@ documentation page
         background: black;
         color: white;
         margin: 0;
+        @apply(--layout-fit);
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
         display: block;
         position: relative;
       }
@@ -71,6 +74,7 @@ documentation page
 
       #content {
         display: block;
+        padding: 20px;
         background: #303030;
         @apply(--layout-flex);
         @apply(--layout-vertical);
@@ -99,7 +103,7 @@ documentation page
       #docs {
         max-width: var(--iron-component-page-max-width, 48em);
         @apply(--iron-component-page-container);
-        padding: 20px;
+        width: 100%;
         margin: 0 auto;
         color: white;
       }
