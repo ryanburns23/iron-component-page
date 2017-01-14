@@ -421,19 +421,6 @@ documentation page
           '_activeChanged(active, _analyzer)'
         ],
 
-        attached: function() {
-          // In the catalog, let the catalog do all the routing
-          if (!this.catalog) {
-            this._setActiveFromHash();
-            this.listen(window, 'hashchange', '_setActiveFromHash');
-          }
-        },
-
-        detached: function() {
-          if (!this.catalog) {
-            this.unlisten(window, 'hashchange', '_setActiveFromHash');
-          }
-        },
 
         ready: function() {
           var elements = this._loadJson();
@@ -713,10 +700,6 @@ documentation page
           return '<' + this.is + '>\n' +
                  jsonText.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '\n' +
                  '</' + this.is + '>';
-        },
-
-        _demoView: function(path) {
-          return "demo:" + path;
         },
 
 
